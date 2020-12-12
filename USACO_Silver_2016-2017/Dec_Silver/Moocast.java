@@ -1,78 +1,82 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
-public class Moocast {
-	
-	private static boolean[] visited;
-	private static int[] X, Y, power;
+public class Moocast{
+
+	private static ArrayList<Cow> cows;
 	private static int N;
+	private static boolean[] visited;
+	public static void main(String[] args) throws IOException{
 
-	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader("moocast.in"));
 		PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("moocast.out")));
 		N = Integer.parseInt(br.readLine());
-		X = new int[N];
-		Y = new int[N];
-		power = new int[N];
+		cows = new ArrayList<Cow>();
+		StringTokenizer st;
+
+
+		for(int i=0; i<N; i++){
+			st = new StringTokenizer(br.readLine());
+			int x = Integer.parseInt(st.nextToken());
+			int y = Integer.parseInt(st.nextToken());
+			int p = Integer.parseInt(st.nextToken());
+			cows.add(new Cow(x, y, p));
+		}
 		visited = new boolean[N];
-		
-		for(int i=0; i<N; i++) {
-			StringTokenizer st = new StringTokenizer(br.readLine());
-			X[i] = Integer.parseInt(st.nextToken());
-			Y[i] = Integer.parseInt(st.nextToken());
-			power[i] = Integer.parseInt(st.nextToken());
-		}
-		
-		int max = -1;
-		for(int i=0; i<N; i++) {
-			search(i);
-			max = Math.max(max, count());
+
+		int maxCount = 0;
+		for(int i=0; i<N; i++){
 			Arrays.fill(visited, false);
+			search(i);
+			maxCount = Math.max(maxCount, visitCount());
 		}
-		
-		System.out.println(max);
-		pw.println(max);
+
+		System.out.println(maxCount);
+		pw.println(maxCount);
 		br.close();
 		pw.close();
 		System.exit(0);
-		
 	}
-	
-	private static int count() {
+
+
+	public static void search(int n){
+
+		if(visited[n]) return;
+		visited[n] = true;
+
+		int radius = cows.get(n).p;
+		int x = cows.get(n).x;
+		int y = cows.get(n).y;
+
+		for(int i=0; i<cows.size(); i++){
+			int a = cows.get(i).x;
+			int b = cows.get(i).y;
+			if(!visited[i]){
+				
+				int distance = (int) (Math.pow(Math.abs(x - a), 2)) + (int) (Math.pow(Math.abs(y - b), 2));
+				if(radius * radius >= distance){
+					search(i);
+				}
+				 
+			}
+		}
+
+	}
+
+	private static int visitCount(){
 		int count = 0;
-		for(int i=0; i<visited.length; i++) {
+		for(int i=0; i<visited.length; i++){
 			if(visited[i]) count++;
 		}
 		return count;
 	}
-	
-	private static void search(int i) {
-		
-		if(visited[i]) return;
-		visited[i] = true;
-		
-		int x1 = X[i];
-		int y1 = Y[i];
-		int radius = power[i];
-		for(int j=0; j<N; j++) {
-			if(!visited[j] && i != j) {
-				int x2 = X[j];
-				int y2 = Y[j];
-				if(canReach(x1, y1, x2, y2, radius)) {
-					search(j);
-				}
-			}
+
+	static class Cow {
+		int x, y, p;
+		public Cow(int x, int y, int p){
+			this.x = x;
+			this.y = y;
+			this.p = p;
 		}
 	}
-
-	public static boolean canReach(int x1, int y1, int x2, int y2, int r) {
-		return (Math.pow(r, 2) >= (Math.pow(Math.abs(x2-x1), 2) + Math.pow(Math.abs(y2-y1), 2)));
-	}
-
 }

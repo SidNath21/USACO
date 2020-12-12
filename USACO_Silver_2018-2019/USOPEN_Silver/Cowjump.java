@@ -10,8 +10,8 @@ import java.util.StringTokenizer;
 public class Cowjump {
 
 	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader("cowjump.in"));
-		PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("cowjump.out")));
+		BufferedReader br = new BufferedReader(new FileReader("USACO_Silver_2018-2019/cowjump.in"));
+		PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("USACO_Silver_2018-2019/cowjump.out")));
 		int N = Integer.parseInt(br.readLine());
 		ArrayList<Line> lines = new ArrayList<Line>(N);
 

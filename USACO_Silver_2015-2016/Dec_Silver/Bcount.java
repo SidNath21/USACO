@@ -52,7 +52,7 @@ public class Bcount {
 			
 			System.out.println(start + " " + end);
 			int h,g,j;
-			if(start-1 == -1) {
+			if(start == 0) {
 				h = a[end];
 				g = b[end];
 				j = c[end];

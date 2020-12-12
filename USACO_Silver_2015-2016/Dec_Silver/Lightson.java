@@ -1,25 +1,14 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
-public class Lightson {
+public class Lightson{
 
-	private static int[][] rooms;
-	private static boolean[][] visited;
-	private static ArrayList<Switch> switches;
-	private static int [] dr = {1, -1, 0, 0};
-	private static int [] dc = {0, 0, -1, 1};
 	private static int N, M;
-
-	public static void main(String[] args) throws IOException{
-
+	private static boolean[][] visited;
+	private static int[][] rooms;
+	private static int[] dx = {-1, 1, 0, 0}, dy = {0, 0, -1, 1};
+	private static ArrayList<Point>[][] points;
+	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader("lightson.in"));
 		PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("lightson.out")));
 
@@ -29,32 +18,36 @@ public class Lightson {
 
 		rooms = new int[N][N];
 		visited = new boolean[N][N];
-		switches = new ArrayList<Switch>();
 
-		for(int i=0; i<M; i++) {
-			st = new StringTokenizer(br.readLine());
-			int x = Integer.parseInt(st.nextToken())-1;
-			int y = Integer.parseInt(st.nextToken())-1;
-			int a = Integer.parseInt(st.nextToken())-1;
-			int b = Integer.parseInt(st.nextToken())-1;
-			switches.add(new Switch(x, y, a, b));
+		points = new ArrayList[N][N];
+		for(int i=0; i<N; i++){
+			for(int j=0; j<N; j++){
+				points[i][j] = new ArrayList<Point>();
+			}
 		}
 
-		Collections.sort(switches, new Sort());
-
-
+		for(int i=0; i<M; i++){
+			st = new StringTokenizer(br.readLine());
+			int x = Integer.parseInt(st.nextToken()) - 1;
+			int y = Integer.parseInt(st.nextToken()) - 1;
+			int a = Integer.parseInt(st.nextToken()) - 1;
+			int b = Integer.parseInt(st.nextToken()) - 1;
+			points[x][y].add(new Point(a, b));
+			points[a][b].add(new Point(x, y));
+		}
 
 		rooms[0][0] = 1;
 		search(0, 0);
-
+		
 		int count = 0;
-		for(int i=0; i<N; i++) {
-			for(int j=0; j<N; j++) {
-				if(rooms[i][j] == 1) {
-
+		for(int i=0; i<N; i++){
+			for(int j=0; j<N; j++){
+				System.out.print(rooms[i][j]);
+				if(rooms[i][j] == 1){
 					count++;
 				}
 			}
+			System.out.println();
 		}
 
 		System.out.println(count);
@@ -63,82 +56,62 @@ public class Lightson {
 		pw.close();
 		System.exit(0);
 
-
 	}
 
-	private static void search(int r, int c) {
+	private static void search(int x, int y) {
 
-		System.out.println(r + " " + c);
+		if(visited[x][y]) return;
+		visited[x][y] = true;
 
-		if(visited[r][c]) return;
-		visited[r][c] = true;
-		
+		for(Point point: points[x][y]){
 
+			int a = point.x;
+			int b = point.y;
 
-		for(int i=0; i<switches.size(); i++) {
-			int x = switches.get(i).x;
-			int y = switches.get(i).y;
-			int a = switches.get(i).a;
-			int b = switches.get(i).b;
-			if(x == r && y == c) {
-				if(rooms[a][b] == 0) {
-					rooms[a][b] = 1;
-					if(hasNeighbor(a, b)) search(a, b);
+			if(rooms[a][b] == 0 && !visited[a][b]){
+				rooms[a][b] = 1;
+				if(hasVisitedNeighbor(a, b)){
+					search(a, b);
 				}
 			}
 		}
 
-		for(int i=0; i<4; i++) {
-			int newR = r + dr[i];
-			int newC = c + dc[i];
-			if(inBounds(newR, newC) && rooms[newR][newC] == 1) {
-				search(newR, newC);
+		for(int i=0; i<dx.length; i++){
+			int newX = x + dx[i];
+			int newY = y + dy[i];
+			if(inBounds(newX, newY) && !visited[newX][newY] && rooms[newX][newY] == 1){
+				search(newX, newY);
 			}
 		}
 
+		
 
 	}
 
-	private static boolean hasNeighbor(int a, int b) {
-
-		for(int i=0; i<4; i++) {
-			if((inBounds(a+dr[i],b + dc[i]) && rooms[a+dr[i]][b + dc[i]] == 1 && visited[a+dr[i]][b + dc[i]])) return true;
+	private static boolean hasVisitedNeighbor(int x, int y) {
+		
+		for(int i=0; i<dx.length; i++){
+			int newX = x + dx[i];
+			int newY = y + dy[i];
+			if(inBounds(newX, newY) && visited[newX][newY]){
+				return true;
+			}
 		}
+
 		return false;
+		
 	}
 
-	private static boolean inBounds(int r, int c) {
-		return(r >= 0 && r < N && c >= 0 && c < N);
+	private static boolean inBounds(int x, int y) {
+		return x >= 0 && x < N && y >= 0 && y < N;
 	}
 
-	static class Switch {
-
-		int x, y, a, b;
-		public Switch(int x, int y, int a, int b) {
+	static class Point {
+		int x, y;
+		public Point(int x, int y){
 			this.x = x;
 			this.y = y;
-			this.a = a;
-			this.b = b;
 		}
-
-	}
-
-	static class Sort implements Comparator<Switch>{
-
-
-		public int compare(Switch o1, Switch o2) {
-
-			if(o1.x != o2.x) return o1.x - o2.x;
-			else if(o1.y != o2.y) return o1.y - o2.y;
-			else if(o1.a != o2.a) return o1.a - o2.a;
-			else return o1.b - o2.b;
-			
-			
-
-
-		}
-
 	}
 }
-
 

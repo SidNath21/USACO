@@ -1,121 +1,100 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
-public class Closing {
+public class Closing{
 
-	private static ArrayList<Integer>[] pairs;
-
+	private static ArrayList<Integer>[] paths;
 	private static boolean[] visited, closed;
+	public static void main(String[] args) throws IOException{
 
-	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader("closing.in"));
 		PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("closing.out")));
 		StringTokenizer st = new StringTokenizer(br.readLine());
 
 		int N = Integer.parseInt(st.nextToken());
 		int M = Integer.parseInt(st.nextToken());
-		closed = new boolean[N];
-		pairs = new ArrayList[N];
-		int[] closing = new int[N];
-		visited = new boolean[N];
-		for(int i=0; i<pairs.length; i++) {
-			pairs[i] = new ArrayList<Integer>();
+
+		paths = new ArrayList[N];
+		for(int i=0; i<N; i++){
+			paths[i] = new ArrayList<Integer>();
 		}
 
-		for(int i=0; i<M; i++) {
+		int[] closings = new int[N];
+
+		for(int i=0; i<M; i++){
 			st = new StringTokenizer(br.readLine());
-			int a = Integer.parseInt(st.nextToken())-1;
-			int b = Integer.parseInt(st.nextToken())-1;
-			pairs[a].add(b);
-			pairs[b].add(a);
+			int a = Integer.parseInt(st.nextToken()) - 1;
+			int b = Integer.parseInt(st.nextToken()) - 1;
+			paths[a].add(b);
+			paths[b].add(a);
 		}
 
-		for(int i=0; i<N; i++) {
-			closing[i] = Integer.parseInt(br.readLine())-1;
+		for(int i=0; i<N; i++){
+			closings[i] = Integer.parseInt(br.readLine()) - 1;
 		}
 
-		
-		int pos = closing[N-1];
+		visited = new boolean[N];
+		closed = new boolean[N];
+
+		int pos = closings[N-1];
 		search(pos);
-		
-		if(works()) {
+		if(works()){
 			System.out.println("YES");
 			pw.println("YES");
 		}
-		else {
-			System.out.println("NO");
+		else{
+			System.out.println("YES");
 			pw.println("NO");
 		}
 
-		for(int i=0; i<closing.length-1; i++) {
-			closed[closing[i]] = true;
+		for(int i=0; i<closings.length-1; i++){
 			Arrays.fill(visited, false);
-			
+			closed[closings[i]] = true;
 			search(pos);
-			
-			
-			if(works()) {
+			if(works()){
 				System.out.println("YES");
 				pw.println("YES");
 			}
-			else {
+			else{
 				System.out.println("NO");
 				pw.println("NO");
 			}
-
-
 		}
-		
+
 		br.close();
 		pw.close();
 		System.exit(0);
-		
-
-
-
-
 
 	}
 
-	private static boolean works() {
+	public static void search(int pos){
 
-		for(int i=0; i<visited.length; i++) {
-			if(!closed[i]) {
+		if(visited[pos] || closed[pos]) return;
+		visited[pos] = true;
+
+		// System.out.println(pos);
+
+		for(int i=0; i<paths[pos].size(); i++){
+
+			if(!closed[paths[pos].get(i)]){
+				if(!visited[paths[pos].get(i)]){
+					search(paths[pos].get(i));
+				}
+			}
+		
+			
+		}
+
+	}
+
+	public static boolean works(){
+		for(int i=0; i<visited.length; i++){
+			if(!closed[i]){
 				if(!visited[i]) return false;
 			}
+			
 		}
 
 		return true;
-
-
 	}
-
-	private static void search(int n) {
-
-		if(visited[n] || closed[n]) return;
-		visited[n] = true;
-
-		for(int i = 0; i<pairs[n].size(); i++) {
-			if(!closed[pairs[n].get(i)] ) {
-				if(!visited[pairs[n].get(i)]) {
-					search(pairs[n].get(i));
-				}
-			}
-		}
-
-
-
-	}
-
-
-
-
 }
-
