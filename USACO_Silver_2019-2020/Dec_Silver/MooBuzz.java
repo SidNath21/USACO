@@ -11,7 +11,7 @@ public class MooBuzz {
         long min = 1;
         long max = Integer.MAX_VALUE;
 
-        while(min != max){
+        while(min < max){
             long mid = (min + max) / 2;
             long midCount = count(mid);
 

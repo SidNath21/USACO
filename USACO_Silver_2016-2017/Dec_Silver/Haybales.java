@@ -55,11 +55,16 @@ public class Haybales {
 		int max = N;
 		
 		
-		while(min + 1 != max) {
+		while(min < max) {
+
 			int mid = (min + max) / 2;
 			
-			if(n >= position[mid]) min = mid;
-			else if(n <= position[mid]) max = mid;
+			if(n >= position[mid]){
+				min = mid + 1;
+			} 
+			else{
+				max = mid;
+			}
 					
 		}
 		

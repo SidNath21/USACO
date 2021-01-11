@@ -64,10 +64,11 @@ public class Wormsort {
 
             for(int i=0; i<N; i++){
                 Arrays.fill(visited, false);
-                if(!visited[i]){
-                    search(i, mid);
-                    if(works()) work = true;
-                }
+                search(i, mid);
+                if(works()){
+                    work = true;
+                    break;
+                } 
             }
 
             if(work){

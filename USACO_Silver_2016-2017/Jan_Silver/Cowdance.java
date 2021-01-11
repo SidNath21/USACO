@@ -28,7 +28,7 @@ public class Cowdance {
 		}
 		
 		
-		System.out.println(works(6));
+		// System.out.println(works(4));
 		
 		int min = 1;
 		int max = N;
@@ -54,16 +54,16 @@ public class Cowdance {
 	}
 
 	private static boolean works(int mid) {
-		
+		// 4 7 8 6 4
 		int time = 0;
 		ArrayList<Integer> arr = new ArrayList<Integer>();
 		for(int i=0; i<cows.length; i++) {
+			
 			Collections.sort(arr);
-			if(arr.size() == mid) {
-				time = arr.remove(0);
-				
-			}
+			
+			if(arr.size() == mid) time = arr.remove(0);
 			if(time + cows[i] > T) return false;
+			
 			arr.add(time + cows[i]);
 			
 		}

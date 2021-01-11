@@ -1,15 +1,5 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Measurement {
 
@@ -35,12 +25,11 @@ public class Measurement {
 			
 		}
 		
-		Collections.sort(logs, new Sort());
+		Collections.sort(logs);
 		
 		
 		for(int i=0; i<logs.size(); i++) {
-			int ID = logs.get(i).ID;
-			int output = logs.get(i).output;
+			
 		}
 		
 		
@@ -51,20 +40,18 @@ public class Measurement {
 	}
 	
 	
-	static class Log{
+	static class Log implements Comparable<Log>{
 		int day, ID, output;
 		public Log(int day, int ID, int output) {
 			this.day= day;
 			this.ID = ID;
 			this.output = output;
 		}
-	}
-	
-	static class Sort implements Comparator<Log>{
-		
-		public int compare(Log o1, Log o2) {
-			return o1.day - o2.day;
+
+		public int compareTo(Log oLog){
+			return day - oLog.day;
 		}
 	}
+	
 
 }

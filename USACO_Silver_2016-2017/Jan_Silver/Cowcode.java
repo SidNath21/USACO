@@ -14,23 +14,41 @@ public class Cowcode {
 		StringTokenizer st = new StringTokenizer(br.readLine());
 
 		String str = st.nextToken();	
-		long N = Integer.parseInt(st.nextToken());
+		long N = Integer.parseInt(st.nextToken()) - 1;
 		
-		while(str.length() < N) {
-			String translated = Character.toString(str.charAt(str.length()-1)) + str.substring(0, str.length()-1);
-			str += translated;
-		}
+		char ans = search(N, str);
 		
 		
-		System.out.println(str);
-		System.out.println(str.charAt((int) (N-1)));
-		pw.println(str.charAt((int) (N-1)));
+		System.out.println(ans);
+		
+		pw.println(ans);
 		br.close();
 		pw.close();
 		System.exit(0);
 		
 		
 		
+	}
+
+	private static char search(long n, String str) {
+		if(n < str.length()){
+			return str.charAt((int) n);
+		}
+
+		long len = str.length();
+		while( 2*len < n ){
+			len *= 2;
+		}
+
+		if(len == n){
+			return search(n-1, str);
+		}
+
+		else{
+			return search(n - len - 1, str);
+		}
+
+
 	}
 
 

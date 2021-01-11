@@ -1,47 +1,37 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
-public class Helpcross {
-
-
+public class Helpcross{
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new FileReader("helpcross.in"));
 		PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("helpcross.out")));
-		StringTokenizer st = new StringTokenizer(br.readLine());
 
+		StringTokenizer st = new StringTokenizer(br.readLine());
 		int C = Integer.parseInt(st.nextToken());
 		int N = Integer.parseInt(st.nextToken());
 
-		int[] chickens = new int[C];
-		ArrayList<Time> times = new ArrayList<Time>();
+		int[] chickens = new int[C];	
+		ArrayList<Cow> cows = new ArrayList<Cow>();
 
-		for(int i=0; i<C; i++) {
-			chickens[i] = Integer.parseInt(br.readLine());
+		for(int i=0; i<C; i++){
+			 chickens[i] = Integer.parseInt(br.readLine());
 		}
-		for(int i=0; i<N; i++) {
+
+		for(int i=0; i<N; i++){
 			st = new StringTokenizer(br.readLine());
-			int a = Integer.parseInt(st.nextToken());
-			int b = Integer.parseInt(st.nextToken());
-			times.add(new Time(a, b));
+			int s = Integer.parseInt(st.nextToken());
+			int e = Integer.parseInt(st.nextToken());
+			cows.add(new Cow(s, e));
 		}
 
 		Arrays.sort(chickens);
-		Collections.sort(times, new Sort());
+		Collections.sort(cows);
 		boolean[] used = new boolean[N];
 		int count = 0;
 		for(int i=0; i<chickens.length; i++) {
-			for(int j=0; j<times.size(); j++) {
+			for(int j=0; j<cows.size(); j++) {
 				if(!used[j]) {
-					if(chickens[i] >= times.get(j).start && chickens[i] <= times.get(j).end) {
+					if(chickens[i] >= cows.get(j).start && chickens[i] <= cows.get(j).end) {
 						count++;
 						used[j] = true;
 						break;
@@ -53,35 +43,28 @@ public class Helpcross {
 
 
 		System.out.println(count);
-		pw.print(count);
+		pw.println(count);
 		br.close();
 		pw.close();
 		System.exit(0);
 
-
 	}
 
-	static class Time{
+	static class Cow implements Comparable<Cow>{
 		int start, end;
-		public Time(int a, int b) {
-			start = a;
-			end = b;
-		}
-	}
-
-
-	static class Sort implements Comparator<Time>{
-
-		@Override
-		public int compare(Time o1, Time o2) {
-			if(o1.start == o2.start && o1.end == o2.end) return 0;
-			if(o1.end < o2.end) return -1;
-			if(o1.end == o2.end && o1.start < o2.start) return -1;
-
-			else return 1;
+		public Cow(int start, int end){
+			this.start = start;
+			this.end = end;
 		}
 
-	}
+		public int compareTo(Cow oCow){
+			if(end == oCow.end){
+				return start - oCow.start;
+			}
 
+			return end - oCow.end;
+		}
+	}
 
 }
+

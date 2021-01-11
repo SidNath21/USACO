@@ -3,65 +3,121 @@ import java.util.*;
 
 public class Where{
 
+    private static int N;
     private static int[][] arr;
-    private static int[] colors;
+    private static ArrayList<PLC> plcs;
+    private static int[] colorCount;
     private static boolean[][] visited;
-    private static int[] dx = {-1, 1, 0, 0}, dy = {0, 0 , -1, 1};
+    private static int count;
+    private static ArrayList<Integer> colors;
 
+    private static int[] dx = {-1, 1, 0, 0}, dy = {0, 0, -1, 1};
+    
     public static void main(String[] args) throws IOException{
+        
         BufferedReader br = new BufferedReader(new FileReader("where.in"));
         PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("where.out")));
-        int N = Integer.parseInt(br.readLine());
+        N = Integer.parseInt(br.readLine());
 
         arr = new int[N][N];
-        colors = new int[26];
-        ArrayList<PLC> plcs = new ArrayList<PLC>();
+        visited = new boolean[N][N];
 
         for(int i=0; i<N; i++){
             String str = br.readLine();
             for(int j=0; j<N; j++){
-                char c = str.charAt(j);
-                arr[i][j] = c - 64;
-                // System.out.print(arr[i][j]);
+                arr[i][j] = str.charAt(j) - 64;
             }
-            // System.out.println();
         }
 
-        visited = new boolean[N][N];
-        for(int x1=0; x1 < N; x1++){
-            for(int y1 = 0; y1 < N; y1++){
+        plcs = new ArrayList<PLC>();
+
+
+        colorCount = new int[100];
+        colors = new ArrayList<Integer>();
+
+        for(int x1 = 0; x1 < N; x1 ++){
+            for(int y1 = 0; y1 < N; y1 ++){
                 for(int x2 = x1; x2 < N; x2++){
                     for(int y2 = y1; y2 < N; y2++){
 
+
                         PLC plc = new PLC(x1, y1, x2, y2);
+                        int c = getColorCount(plc);
 
-                        Arrays.fill(colors, 0);
-                        int colorCount = getColors(plc);
-                        System.out.println(colorCount);
+                        if(c == 2){
 
-                        if(colorCount == 2){
+                            int first = colors.remove(0);
+                            int second = colors.remove(0);
 
-                            int c = arr[x1][y1];
-                            int x = x1;
-                            int y = y1;
-                            
-                            search(x, y, c, plc);
-                            
+                            int firstComponents = 0;
+                            int secondComponents = 0;
+
+                            for(int i=x1; i<=x2; i++){
+                                for(int j=y1; j<=y2; j++){
+                                    if(!visited[i][j] && arr[i][j] == first){
+                                        search(i, j, first, plc);
+                                        firstComponents++;
+                                    }
+                                    if(!visited[i][j] && arr[i][j] == second){
+                                        search(i, j, second, plc);
+                                        secondComponents++;
+                                    }
+                                }
+                            }
+
+                            if( (firstComponents == 1 && secondComponents >= 2) || (firstComponents >= 2 && secondComponents == 1)){
+                                plcs.add(plc);
+                            }
 
                         }
 
-                        for(boolean[] arr: visited){
-                            Arrays.fill(arr, false);
+                        for(boolean[] b: visited){
+                            Arrays.fill(b, false);
                         }
-                        
 
+                        Arrays.fill(colorCount, 0);
+                        colors.clear();
+            
                     }
                 }
             }
+        } 
+
+        int count = 0;
+        for(int i=0; i<plcs.size(); i++){
+            if(isContained(i)){
+                plcs.remove(i);
+                i--;
+            }
         }
 
+        System.out.println(plcs.size());
+        pw.println(plcs.size());
+        br.close();
+        pw.close();
+        System.exit(0);
 
-        // System.out.println(getColors(0, 1, 1, 2));
+    }
+
+    private static boolean isContained(int n) {
+
+        int x1 = plcs.get(n).x1;
+        int y1 = plcs.get(n).y1;
+        int x2 = plcs.get(n).x2;
+        int y2 = plcs.get(n).y2;
+
+        for(int i=0; i<plcs.size(); i++){
+            if(i != n){
+                if( x1 >= plcs.get(i).x1 && x2 <= plcs.get(i).x2 && 
+                    y1 >= plcs.get(i).y1 && y2 <= plcs.get(i).y2){
+                        return true;
+                    }
+            }
+        }
+
+        return false;
+
+       
     }
 
     private static void search(int x, int y, int c, PLC plc) {
@@ -69,39 +125,59 @@ public class Where{
         if(visited[x][y]) return;
         visited[x][y] = true;
 
+
         for(int i=0; i<4; i++){
             int newX = x + dx[i];
             int newY = y + dy[i];
+
+            if(inBounds(newX, newY, plc) && !visited[newX][newY] && arr[newX][newY] == c){
+                search(newX, newY, c, plc);
+            }
         }
 
     }
 
-    private static int getColors(PLC plc) {
+    private static boolean inBounds(int x, int y, PLC plc){
+        return x >= plc.x1 && x <= plc.x2 && y >= plc.y1 && y <= plc.y2;
+    }
+
+    private static int getColorCount(PLC plc){
 
         int count = 0;
         for(int i=plc.x1; i<=plc.x2; i++){
-            for(int j=plc.y1; j<=plc.y2; j++){
-                // System.out.print(arr[i][j]);
-                if(colors[arr[i][j]] == 0){
+            for(int j=plc.y1; j<= plc.y2; j++){
+                if(colorCount[arr[i][j]] == 0){
+                    colors.add(arr[i][j]);
                     count++;
                 }
-                colors[arr[i][j]]++;
+                colorCount[arr[i][j]]++;
             }
-            // System.out.println();
         }
-
         return count;
     }
 
     static class PLC{
         int x1, y1, x2, y2;
+
         public PLC(int x1, int y1, int x2, int y2){
-            x1 = this.x1;
-            x2 = this.x2;
-            y1 = this.y1;
-            y2 = this.y2;
+            this.x1 = x1;
+            this.y1 = y1;
+            this.x2 = x2;
+            this.y2 = y2;
+        }
+
+        public String toString(){
+            String str = "";
+            for(int i=x1; i<=x2; i++){
+                for(int j=y1; j<=y2; j++){
+                    str += arr[i][j];
+                }
+                str += "\n";
+            }
+            return str;
         }
     }
+
 
 
 

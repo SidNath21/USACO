@@ -57,13 +57,13 @@ public class Meetings {
         Collections.sort(twPairs);
 
         int weight = 0;
-        int t = 0;
+        int count = 0;
         while(2 * weight < totWeight){
-            weight += twPairs.get(t).w;
-            t++;
+            weight += twPairs.get(count).w;
+            count++;
         }
 
-        t = twPairs.get(t-1).t;
+        int t = twPairs.get(count-1).t;
 
         Collections.sort(leftPoint);
 
