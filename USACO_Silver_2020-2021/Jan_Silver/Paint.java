@@ -1,107 +1,104 @@
-/*
-ID: siddharthnath21
-LANG: JAVA
-TASK: No Time To Paint
-*/
-
 import java.io.*;
 import java.util.*;
+public class Paint2 {
+	
+	public static int range[][]; 
+	public static int fence[]; 
+	public static Map<Integer,Integer> brushes = new HashMap();
+	public static Map<String,Integer> paintedSegments = new HashMap();
+	
+	public static void removeBrush(int brush)
+	{
+		for (int i = brush+1; i <= 26; i++)
+		{
+			Integer br = i;
+			if (brushes.containsKey(br))
+			{
+				brushes.remove(br);
+			}
+		}
+	}
+	
+	public static void main(String[] args) throws IOException {
+		// initialize file I/O
+		Scanner in = new Scanner(System.in);
+		// read in the first line, store a and b
+		StringTokenizer st = new StringTokenizer(in.nextLine());
+		int n = Integer.parseInt(st.nextToken());
+		int k = Integer.parseInt(st.nextToken());
+		String pattern = in.nextLine();
+		range = new int[k][2];
+		for (int i=0; i < k; i++)
+		{
+			st = new StringTokenizer(in.nextLine());
+			while (st.hasMoreTokens())
+			{
+				int a = Integer.parseInt(st.nextToken());
+				int b = Integer.parseInt(st.nextToken());
+				range[i][0]=a;
+				range[i][1]=b;
+			}
+		}
 
-public class Paint {
+		fence = new int[n];
+		for (int i=0; i < n; i++)
+		{
+			fence[i]=pattern.charAt(i)-64;
+		}
+		int totalSum=0;
+		for(int i=0;i<k;i++)
+		{
+			brushes.clear();
+			totalSum=0;
+			String startKey = Integer.toString(range[i][0]);
+			if(paintedSegments.containsKey(startKey))
+			{
+				totalSum+= paintedSegments.get(startKey);
+			}
+			else
+			{
+				int res = paintSegment(0,range[i][0]-1);
+				paintedSegments.put(startKey, res);
+				totalSum+=res;
+			}
+			brushes.clear();
+			startKey = Integer.toString(range[i][1]);
+			if(paintedSegments.containsKey(startKey))
+			{
+				totalSum+= paintedSegments.get(startKey);
+			}
+			else
+			{
+				int res = paintSegment(range[i][1],n);
+				paintedSegments.put(startKey, res);
+				totalSum+=res;
+			}
+			System.out.println(totalSum);
+		}
+		
+		
+		
+	}
 
-    private static int[][] arr;
-    private static int[] sums1, sums2;
-    private static String str;
-    private static int N, Q;
-    private static Map<Integer, Integer> mp1;
-    private static Map<String, Integer> mp2;
-
-    public static void main(String[] args) {
-        
-        Scanner scanner = new Scanner(System.in);
-        StringTokenizer st = new StringTokenizer(scanner.nextLine());
-
-        int N = Integer.parseInt(st.nextToken());
-        int Q = Integer.parseInt(st.nextToken());
-
-        str = scanner.nextLine();
-
-        mp1 = new HashMap();
-        mp2 = new HashMap();
-
-        arr = new int[Q][2];
-
-        for(int i=0; i<Q; i++){
-            st = new StringTokenizer(scanner.nextLine());
-            int a = Integer.parseInt(st.nextToken());
-            int b = Integer.parseInt(st.nextToken());
-            arr[i][0] = a;
-            arr[i][1] = b;
-        }
-
-        sums1 = new int[N];
-        sums2 = new int[N];
-
-        mp1.clear();
-        getCountOne(0, N);
-        mp1.clear();
-        getCountTwo(0, N);
-
-        for(int i=0; i<Q; i++){
-            long count = 0;
-            int a = arr[i][0] - 1;
-            int b = arr[i][1];
-            
-            if(a != 0) count += sums1[a - 1];
-            if(b != N) count += sums2[N-b-1];
-
-            System.out.println(count);
-            
-        }
-
-    }
-
-    private static void getCountOne(int a, int b){
-
-        int count = 0;
-        for(int i=a; i<b; i++){
-
-            int n = (int) (str.charAt(i) - 64);
-
-            for(int j=n+1; j<=26; j++){
-                if(mp1.containsKey((Integer) j)){
-                    mp1.remove((Integer) j);
-                }
-            }
-
-            if(!mp1.containsKey(n)){
-                mp1.put(n, 0);
-                count++;
-            }
-            sums1[i] = count;
-        }
-
-    }
-
-    private static void getCountTwo(int a, int b){
-
-        int count = 0;
-        for(int i=b-1; i>=a; i--){
-
-            int n = (int) (str.charAt(i) - 64);
-
-            for(int j=n+1; j<=26; j++){
-                if(mp1.containsKey((Integer) j)){
-                    mp1.remove((Integer) j);
-                }
-            }
-
-            if(!mp1.containsKey(n)){
-                mp1.put(n, 0);
-                count++;
-            }
-            sums2[str.length()-i-1] = count;
-        }
-    }
-    
+	private static int paintSegment(int start, int end) {
+		int sum=0;
+		
+		
+		for(int i=start; i<end; i++)
+		{
+			int current=fence[i];
+			boolean check=false;
+			removeBrush(current);
+			if(!brushes.containsKey(current))
+			{
+				brushes.put(current, 0);
+				sum++;
+			}
+			
+			
+		}
+		return sum;
+	}
+	
+	
 }
